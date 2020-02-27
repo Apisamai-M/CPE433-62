@@ -296,13 +296,23 @@ namespace DNWS
                     // Get one, show some info
                     _parent.Log("Client accepted:" + clientSocket.RemoteEndPoint.ToString());
                     HTTPProcessor hp = new HTTPProcessor(clientSocket, _parent);
-                    hp.Process();
+
+                    Thread t = new Thread(() => workThread(hp));
+                    t.Start();
+
+                    // hp.Process();
+                    
                 }
-                catch (Exception ex)
+                catch (ThreadInterruptedException ex)
                 {
                     _parent.Log("Server starting error: " + ex.Message + "\n" + ex.StackTrace);
                 }
             }
+        }
+
+        private static void workThread(HTTPProcessor hp)
+        {
+            hp.Process();
         }
     }
 }
